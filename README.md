@@ -1,2 +1,2 @@
-# DelimitedFiles
-DelimitedFiles: read and write delimited files
+# libdlm
+libdlm: a tiny library for reading and writing delimited files
