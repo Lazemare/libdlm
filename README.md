@@ -36,7 +36,9 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
 
    - `char comment_char`: the character indicates that characters after that are comments.
 
-   return value: number of total words in the input file.
+   return value:
+
+   number of total words in the input file.
 2. `writedlm`:
 
    parameters:
@@ -47,6 +49,8 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
    
    - `char delim`: will write output file with this delimiter.
    
-   return value: number of total words has been written.
+   return value:
+
+   number of total words has been written.
 
 I defined three macros called `MAXLINES`, `MAXWORDS` and `MAXLETTERS` in the header file, which control the maximum file size. You may want to change them depending on your tasks. According to different OS, you should also adjust the `EOL` macro, since files under Linux, macOS and windows use different EOL. For detailed usages, you may want to look into the `main.c` file under `test` folder.
