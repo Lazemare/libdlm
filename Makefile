@@ -14,8 +14,8 @@ LDFLAGS = -fPIC -shared
 # Objects
 INCS    = -I./include
 OBJS    = readdlm.o writedlm.o
-LIB     = lib/libreaddlm.so.1
-LIB_    = lib/libreaddlm.a
+LIB     = lib/libdlm.so.1
+LIB_    = lib/libdlm.a
 EXE     = test/test.x
 
 # All: aaimd
@@ -32,7 +32,7 @@ lib: $(OBJS)
 	$(AR) $(ARFLAGS) $(LIB_) $(OBJS)
 
 test: lib
-	$(CC) -o $(EXE) $(INCS) test/main.c -L./lib -lreaddlm
+	$(CC) -o $(EXE) $(INCS) test/main.c -L./lib -ldlm
 	cd ./test && ./test.x
 
 # Remove all object files.
