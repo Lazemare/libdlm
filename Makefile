@@ -33,7 +33,7 @@ lib: $(OBJS)
 
 test: lib
 	$(CC) -o $(EXE) $(INCS) test/main.c -L./lib -ldlm
-	cd ./test && ./test.x
+	cd ./test && ./test.x txt
 
 # Remove all object files.
 .PHONY : clean
