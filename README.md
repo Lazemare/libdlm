@@ -20,7 +20,8 @@ You could call two functions from the library:
 int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim, int quotes, int comments, char comment_char);
 int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
 ```
-1. `readdlm`
+1. `readdlm`:
+
    parameters:
    - `FILE *fp`: the input file stream.
 
@@ -35,7 +36,8 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
    - `char comment_char`: the character indicates that characters after that are comments.
 
    return value: number of total words in the input file.
-2. `writedlm`
+2. `writedlm`:
+
    - `FILE *fp`: the output file stream.
    - `char list[MAXLINES][MAXWORDS][MAXLETTERS]`: same as this parameter in `readdlm`.
    - `char delim`: will write output file with this delimiter.
