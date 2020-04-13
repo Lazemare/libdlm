@@ -23,6 +23,7 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
 1. `readdlm`:
 
    parameters:
+   
    - `FILE *fp`: the input file stream.
 
    - `char list[MAXLINES][MAXWORDS][MAXLETTERS]`: where storing the address of the buffer containing the text. `list[i][j]` contains the word in (i+1) row and (j+1) column of `fp`.
@@ -37,6 +38,7 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim);
 
    return value: number of total words in the input file.
 2. `writedlm`:
+
    parameters:
 
    - `FILE *fp`: the output file stream.
