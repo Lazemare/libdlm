@@ -14,8 +14,9 @@ int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim)
 		flag = 0;
 		for (j=0; j < MAXWORDS; j++) {
 			if (strcmp(list[i][j],"\0") > 0) {
-				count += fprintf(fp,"%s%c",list[i][j],delim);
+				fprintf(fp,"%s%c",list[i][j],delim);
 				flag = 1;
+				count++;
 			}
 		}
 		if (flag == 1) {
