@@ -28,6 +28,7 @@ writedlm.o:
 	$(CC) $(INCS) $(CFLAGS) -c src/writedlm.c
 
 lib: $(OBJS)
+	mkdir -p ./lib
 	$(CC) -o $(LIB) $(OBJS) $(LDFLAGS)
 	$(AR) $(ARFLAGS) $(LIB_) $(OBJS)
 
