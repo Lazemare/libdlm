@@ -57,6 +57,7 @@ int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
 	int wordcue = 0;
 	int linenum = 0;
 	int quotescue = 0;
+	int count = 0;
 	char *line = NULL;
 	/* Just in case ... */
 	memset(list, 0, sizeof *list);
@@ -68,16 +69,22 @@ int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
 		for (i=0; i < read; i++) {
 			code = readdlm_helper(line[i],quotescue, \
 				delim,quotes,comments,comment_char);
-			if (code == 4 && i ==0) {
+			if (code == 4 && i == 0) {
 				goto SKIP;
-			} else if (code == 4 || code == 5) {
+			} else if (code == 4) {
 				linenum++;
 				goto SKIP;
-			} else if (code == 0) {
+			} else if (code == 5) {
+				linenum++;
+				goto SKIP;
+			}else if (code == 0) {
 				list[linenum][j][k] = line[i];
-				wordcue = 1;
+				if (wordcue == 0) {
+					wordcue = 1;
+					count++;
+				}
 				k++;
-			} else if (code == 1) {
+			} else if (code == 1 && wordcue == 1) {
 				wordcue = 0;
 				k = 0;
 				j++;
@@ -91,5 +98,5 @@ int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
 		SKIP:
 			NULL;
 	}
-	return 0;
+	return count;
 }
