@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "delimitedfile.h"
+#include "delimitedfiles.h"
 
 /* helper function of readdlm. */
 static inline int readdlm_helper(char inp, int quotescue, char delim, \
