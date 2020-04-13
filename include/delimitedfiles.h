@@ -1,5 +1,5 @@
 /* Max line number. */
-#define MAXLINES 50
+#define MAXLINES 200
 /* Max word number per line. */
 #define MAXWORDS 100
 /* Max letter number per word. */
