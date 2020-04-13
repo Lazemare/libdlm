@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "delimitedfile.h"
+#include "delimitedfiles.h"
 
 /* Write delimited file. */
 int writedlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], char delim)
