@@ -35,7 +35,7 @@ static inline int readdlm_helper(char inp, int quotescue, char delim, \
 			code = 5;
 		}
 	} else if (quotes == 0 && quotescue == 1) {
-		if (inp == '"' && inp != EOL) {
+		if (inp == '"') {
 			code = 3;
 		} else if (inp != EOL) {
 			code = 0;
