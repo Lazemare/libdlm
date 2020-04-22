@@ -1,6 +1,6 @@
 # libdlm
 
-libdlm: a tiny library for reading and writing delimited files. The idea of this library comes from `DelimitedFiles.jl` in `Julia` language. This library is not fast, but it's small and easy to use. Me personally use it in some scientific calculation packages, which do not require high IO performance, as part of the input file parser.
+a tiny library for reading and writing delimited files. The idea of this library comes from `DelimitedFiles.jl` in `Julia` language. This library is not fast, but it's small and easy to use. Me personally use it in some scientific calculation packages, which do not require high IO performance, as part of the input file parser.
 
 ## Installation
 
