@@ -35,15 +35,17 @@ void free_dlm(struct DLM *dlm)
 	int i, j;
 	for (i = 0; i < MAXLINES; i++) {
 		for (j = 0; j<MAXWORDS; j++) {
-			free((*dlm).list[i][j]);
 			(*dlm).list[i][j] = NULL;
+			free((*dlm).list[i][j]);
 		}
-		free((*dlm).list[i]);
 		(*dlm).list[i] = NULL;
+		free((*dlm).list[i]);
+		
 	}
-	free((*dlm).list);
 	(*dlm).list = NULL;
+	free((*dlm).list);
 }
+
 
 
 /* helper function of readdlm. */
