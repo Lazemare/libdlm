@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 	init_dlm(&dlm);
 
 	readdlm(inp,&dlm,' ',0,0,'#');
-	printf("---- quotes = 0; comments = 0; comment_char='#'; ----\n");
-	fprintf(out,"---- quotes = 0; comments = 0; comment_char='#'; ----\n");
+	printf("---- quotes = 0; comments = 0; comment_char='#'; ----\n\n");
+	fprintf(out,"---- quotes = 0; comments = 0; comment_char='#'; ----\n\n");
 	writedlm(stdout,&dlm,' ');
 	writenum = writedlm(out,&dlm,' ');
 	fprintf(out,"%s %d\n","Total read-in words:",dlm.wordnum);
@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 
 	rewind(inp);
 	readdlm(inp,&dlm,' ',1,0,'#');
-	printf("---- quotes = 1; comments = 0; comment_char='#'; ----\n");
-	fprintf(out,"---- quotes = 1; comments = 0; comment_char='#'; ----\n");
+	printf("---- quotes = 1; comments = 0; comment_char='#'; ----\n\n");
+	fprintf(out,"---- quotes = 1; comments = 0; comment_char='#'; ----\n\n");
 	writedlm(stdout,&dlm,' ');
 	writenum = writedlm(out,&dlm,' ');
 	fprintf(out,"%s %d\n","Total read-in words:",dlm.wordnum);
