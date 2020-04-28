@@ -80,4 +80,6 @@ int writedlm(FILE *fp, struct DLM *dlm, char delim);
    
    return value: number of words that has been written.
 
-The header file three macros called `MAXLINES`, `MAXWORDS` and `MAXLETTERS`, which control the maximum file size. You may want to change them depending on your tasks. According to different OS, you should also adjust the `EOL` macro, since files under Linux, macOS and windows use different EOL. For detailed usages, you may want to look into the `main.c` file under `test` folder.
+-----
+
+The header file contains three macros called `MAXLINES`, `MAXWORDS` and `MAXLETTERS`, which control the maximum file size. You may want to change them depending on your tasks. According to different OS, you should also adjust the `EOL` macro, since files under Linux, macOS and windows use different EOL. For more detailed usages, you may want to look into the `main.c` file under `test` folder.
