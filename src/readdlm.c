@@ -3,13 +3,56 @@
 #include <string.h>
 #include "delimitedfiles.h"
 
+/* clean dlm.list */
+static void memset_dlm(struct DLM dlm)
+{
+	int i, j;
+	for (i = 0; i<MAXLINES; i++) {
+		for (j = 0; j<MAXWORDS; j++) {
+			memset(dlm.list[i][j], 0, MAXLETTERS*sizeof(char));
+		}
+	}
+}
+
+/* initialize dlm.list */
+void init_dlm(struct DLM *dlm)
+{
+	(*dlm).list = (char***)malloc(MAXLINES*(sizeof(char**)));
+	int i, j;
+	for (i = 0; i<MAXLINES; i++) {
+		(*dlm).list[i] =
+			(char**)malloc(MAXWORDS*sizeof(char*));
+		for (j = 0; j<MAXWORDS; j++) {
+			(*dlm).list[i][j] =
+				(char*)malloc(MAXLETTERS*sizeof(char));
+		}
+	}
+}
+
+/* free dlm.list */
+void free_dlm(struct DLM *dlm)
+{
+	int i, j;
+	for (i = 0; i < MAXLINES; i++) {
+		for (j = 0; j<MAXWORDS; j++) {
+			free((*dlm).list[i][j]);
+			(*dlm).list[i][j] = NULL;
+		}
+		free((*dlm).list[i]);
+		(*dlm).list[i] = NULL;
+	}
+	free((*dlm).list);
+	(*dlm).list = NULL;
+}
+
+
 /* helper function of readdlm. */
 static inline int readdlm_helper(char inp, int quotescue, char delim, \
 	int quotes, int comments, char comment_char)
 {
 	/* 0 for same word, 1 for next word 
-	   2 for begin of quotes, 3 for end of quotes 
-	   4 for begin of comments, 5 for next line. */
+	 * 2 for begin of quotes, 3 for end of quotes 
+	 * 4 for begin of comments, 5 for next line. */
 	int code = 0;
 
 	if (quotes == 1) {
@@ -47,20 +90,19 @@ static inline int readdlm_helper(char inp, int quotescue, char delim, \
 }
 
 /* Read delimited file into a 3D array. */
-int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
-	char delim, int quotes, int comments, char comment_char)
+void readdlm(FILE *fp, struct DLM *dlm, char delim, int quotes, \
+	int comments, char comment_char)
 {
 	size_t len;
 	size_t read;
 	int i, j, k;
 	int code = 0;
 	int wordcue = 0;
-	int linenum = 0;
 	int quotescue = 0;
-	int count = 0;
 	char *line = NULL;
-	/* Just in case ... */
-	memset(list, 0, sizeof *list);
+	(*dlm).linenum = 0;
+	(*dlm).wordnum = 0;
+	memset_dlm(*dlm);
 
 	/* Read in one line. */
 	while ((read = getline(&line, &len, fp)) != -1) {
@@ -72,16 +114,16 @@ int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
 			if (code == 4 && i == 0) {
 				goto SKIP;
 			} else if (code == 4) {
-				linenum++;
+				(*dlm).linenum++;
 				goto SKIP;
 			} else if (code == 5) {
-				linenum++;
+				(*dlm).linenum++;
 				goto SKIP;
 			}else if (code == 0) {
-				list[linenum][j][k] = line[i];
+				(*dlm).list[(*dlm).linenum][j][k] = line[i];
 				if (wordcue == 0) {
 					wordcue = 1;
-					count++;
+					(*dlm).wordnum++;
 				}
 				k++;
 			} else if (code == 1 && wordcue == 1) {
@@ -94,9 +136,8 @@ int readdlm(FILE *fp, char list[MAXLINES][MAXWORDS][MAXLETTERS], \
 				quotescue = 0;
 			}
 		}
-		linenum++;
+		(*dlm).wordnum++;
 		SKIP:
 			NULL;
 	}
-	return count;
 }
