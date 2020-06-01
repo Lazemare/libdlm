@@ -62,9 +62,9 @@ int writedlm(FILE *fp, struct DLM *dlm, char delim);
 
    - `char delim`: the delimiter.
 
-   - `int quotes`: if this parameter equals to 0, all characters between two quotes will be treated as one string.
+   - `int quotes`: if true, all characters between two quotes will be treated as one string.
 
-   - `int comments`: if this parameter equals to 0, lines beginning with `comment_char` and text following `comment_char` in any line are ignored.
+   - `int comments`: if true, lines beginning with `comment_char` and text following `comment_char` in any line are ignored.
 
    - `char comment_char`: the character indicates that characters after that are comments.
 
