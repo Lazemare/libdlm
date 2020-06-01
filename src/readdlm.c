@@ -20,10 +20,10 @@ void init_dlm(struct DLM *dlm)
 	(*dlm).list = (char***)malloc(MAXLINES*(sizeof(char**)));
 	int i, j;
 	for (i = 0; i<MAXLINES; i++) {
-		(*dlm).list[i] =
+		(*dlm).list[i] = \
 			(char**)malloc(MAXWORDS*sizeof(char*));
 		for (j = 0; j<MAXWORDS; j++) {
-			(*dlm).list[i][j] =
+			(*dlm).list[i][j] = \
 				(char*)malloc(MAXLETTERS*sizeof(char));
 		}
 	}
@@ -40,7 +40,6 @@ void free_dlm(struct DLM *dlm)
 		}
 		(*dlm).list[i] = NULL;
 		free((*dlm).list[i]);
-
 	}
 	(*dlm).list = NULL;
 	free((*dlm).list);
