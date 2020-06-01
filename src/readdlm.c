@@ -37,7 +37,6 @@ void free_dlm(struct DLM *dlm)
 		for (j = 0; j<MAXWORDS; j++) {
 			(*dlm).list[i][j] = NULL;
 			free((*dlm).list[i][j]);
-
 		}
 		(*dlm).list[i] = NULL;
 		free((*dlm).list[i]);
