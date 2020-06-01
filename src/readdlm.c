@@ -37,28 +37,28 @@ void free_dlm(struct DLM *dlm)
 		for (j = 0; j<MAXWORDS; j++) {
 			(*dlm).list[i][j] = NULL;
 			free((*dlm).list[i][j]);
+
 		}
 		(*dlm).list[i] = NULL;
 		free((*dlm).list[i]);
-		
+
 	}
 	(*dlm).list = NULL;
 	free((*dlm).list);
 }
 
 
-
 /* helper function of readdlm. */
 static inline int readdlm_helper(char inp, int quotescue, char delim, \
 	int quotes, int comments, char comment_char)
 {
-	/* 0 for same word, 1 for next word 
-	 * 2 for begin of quotes, 3 for end of quotes 
+	/* 0 for same word, 1 for next word
+	 * 2 for begin of quotes, 3 for end of quotes
 	 * 4 for begin of comments, 5 for next line. */
 	int code = 0;
 
-	if (quotes == 1) {
-		if (comments == 0 && inp == comment_char) {
+	if (!quotes) {
+		if (comments && inp == comment_char) {
 			code = 4;
 		} else if (inp != delim && inp != EOL) {
 			code = 0;
@@ -67,8 +67,8 @@ static inline int readdlm_helper(char inp, int quotescue, char delim, \
 		} else if (inp == EOL) {
 			code = 5;
 		}
-	} else if (quotes == 0 && quotescue == 0) {
-		if (comments == 0 && inp == comment_char) {
+	} else if (quotes && quotescue == 0) {
+		if (comments && inp == comment_char) {
 			code = 4;
 		} else if (inp != '"' && (inp != delim && inp != EOL)) {
 			code = 0;
@@ -79,7 +79,7 @@ static inline int readdlm_helper(char inp, int quotescue, char delim, \
 		} else if (inp == EOL) {
 			code = 5;
 		}
-	} else if (quotes == 0 && quotescue == 1) {
+	} else if (quotes && quotescue == 1) {
 		if (inp == '"') {
 			code = 3;
 		} else if (inp != EOL) {
@@ -121,7 +121,7 @@ void readdlm(FILE *fp, struct DLM *dlm, char delim, int quotes, \
 			} else if (code == 5) {
 				(*dlm).linenum++;
 				goto SKIP;
-			}else if (code == 0) {
+			} else if (code == 0) {
 				(*dlm).list[(*dlm).linenum][j][k] = line[i];
 				if (wordcue == 0) {
 					wordcue = 1;
