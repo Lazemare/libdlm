@@ -3,6 +3,7 @@
 #include <string.h>
 #include "delimitedfiles.h"
 
+/* Make a small test. */
 int main(int argc, char *argv[])
 {
 	FILE *inp;
