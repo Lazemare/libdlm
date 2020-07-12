@@ -1,26 +1,18 @@
 # GNU Flags
 CC      = gcc
 AR      = ar
-CFLAGS  = -O3 -Wall -g
+CFLAGS  = -O3 -Wall
 ARFLAGS = -rc
-LDFLAGS = -fPIC -shared
-
-# Intel Flags
-# CC      = icc
-# AR      = ar
-# CFLAGS  = -O3 -xhost
-# LDFLAGS = 
 
 # Objects
 INCS    = -I../include
 OBJS    = readdlm.o writedlm.o
-LIB     = ../lib/libdlm.so.1
-LIB_    = ../lib/libdlm.a
+LIB     = ../lib/libdlm.a
 EXE     = ../test/test.x
 
-# All: aaimd
+# All: lib
 .PHONY : all
-all: test
+all: lib
 
 readdlm.o:
 	$(CC) $(INCS) $(CFLAGS) -c readdlm.c
@@ -29,8 +21,7 @@ writedlm.o:
 
 lib: $(OBJS)
 	mkdir -p ../lib
-	$(CC) -o $(LIB) $(OBJS) $(LDFLAGS)
-	$(AR) $(ARFLAGS) $(LIB_) $(OBJS)
+	$(AR) $(ARFLAGS) $(LIB) $(OBJS)
 
 test: lib
 	$(CC) -o $(EXE) $(INCS) ../test/main.c -L../lib -ldlm
@@ -44,5 +35,4 @@ clean:
 # Remove all object files and executables.
 .PHONY : veryclean
 veryclean:
-	rm -f $(OBJS) ../lib/* ../test/test.x ../test/out
-
+	rm -rf $(OBJS) ../lib ../test/test.x ../test/out
