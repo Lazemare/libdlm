@@ -1,6 +1,6 @@
 # libdlm
 
-libdlm: a tiny library for reading and writing delimited files. The idea of this library comes from `DelimitedFiles.jl` in `Julia` language. This library is not fast, but it's small and easy to use. Me personally use it in some scientific calculation packages, which do not require high IO performance, as part of the input file parser.
+Libdlm is a tiny library for reading and writing delimited files. The idea of this library comes from `DelimitedFiles.jl` in [`Julia`](https://julialang.org/ "Julia") language. Libdlm is not fast, but it's small and easy to use. Me personally use it in some scientific calculation packages, which do not require high IO performance, as part of the input file parser.
 
 ## Installation
 
@@ -14,72 +14,69 @@ Type `make test` in the `src` folder, then the program will read a delimited fil
 
 ## Usage
 
-### Structure
+### Type
 
 The header file `delimitedfiles.h` defines the struct used to record information of the delimited file, namely `DLM`. There are three members in it:
 
 - `int linenum`: line number of the delimited file.
 
-- `int wordnum`: total word number of the delimited file.
+- `int *wordnum`: word number of each line in the delimited file.
 
-- `char ***list`: storing the address of the buffer containing the text. `list[i][j]` contains the word in (i+1) row and (j+1) column of the delimited file.
+- `char ***list`: storing the address of the memories that contain the text. `list[i][j]` contains the word in `i+1` row and `j+1` column of the delimited file.
+
+You could use `dlm_t var_name` to initialize a `DLM` struct called `var_name`.
 
 ### Functions
 
-You could call four functions from the library:
+You could call three functions from the library:
 
 ```C
-void init_dlm(struct DLM *dlm);
-void free_dlm(struct DLM *dlm);
 void readdlm(FILE *fp, struct DLM *dlm, char delim, int quotes, int comments, char comment_char);
 int writedlm(FILE *fp, struct DLM *dlm, char delim);
+void free_dlm(struct DLM *dlm);
 ```
 
-1. `init_dlm`:
+1. `readdlm`:
 
-   Before reading from or writing to the delimited file, you should first initialize a `DLM` struct by:
-
-   ```C
-   struct DLM dlm;
-   init_dlm(&dlm);
-   ```
-
-2. `free_dlm`:
-
-   After the struct finished its job, you can free the memory by:
-
-   ```C
-   free_dlm(&dlm);
-   ```
-
-3. `readdlm`:
+   Read input file stream into a `DLM` struct.
 
    parameters:
 
    - `FILE *fp`: the input file stream.
 
-   - `struct DLM *dlm`: address of a `DLM` struct.
+   - `dlm_t *dlm`: address of a `DLM` struct.
 
    - `char delim`: the delimiter.
 
    - `int quotes`: if true, all characters between two quotes will be treated as one string.
 
-   - `int comments`: if true, lines beginning with `comment_char` and text following `comment_char` in any line are ignored.
+   - `int comments`: if true, lines beginning with `comment_char` and text after `comment_char` in any line will be ignored.
 
    - `char comment_char`: the character indicates that characters after that are comments.
 
-4. `writedlm`:
+2. `writedlm`:
+
+   Write texts in a `DLM` struct to output stream.
 
    parameters:
 
    - `FILE *fp`: the output file stream.
-   
-   - `struct DLM *dlm`: address of a `DLM` struct.
-   
-   - `char delim`: will write output file with this delimiter.
-   
+
+   - `dlm_t *dlm`: address of a `DLM` struct.
+
+   - `char delim`: delimiter used to write the output file.
+
    return value: number of words that has been written.
 
------
 
-The header file contains three macros called `MAXLINES`, `MAXWORDS` and `MAXLETTERS`, which control the maximum file size. You may want to change them depending on your tasks. According to different OS, you should also adjust the `EOL` macro, since files under Linux, macOS and windows use different EOL. For more detailed usages, you may want to look into the `main.c` file under `test` folder.
+3. `free_dlm`:
+
+   Free allocated memories in a `DLM` struct.
+
+   parameters:
+
+   - `dlm_t *dlm`: address of a `DLM` struct.
+
+# MISCS
+
+The header file `readdlm.h` contains a macro called `BUFFSIZE`, which is the maximum line length. You may want to change it depending on your tasks. For detailed usages, you may want to look into the `main.c` file under `test` folder.
