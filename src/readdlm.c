@@ -1,143 +1,172 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "readdlm.h"
 #include "delimitedfiles.h"
 
-/* clean dlm.list */
-static void memset_dlm(struct DLM dlm)
+/* initialization */
+static void init_dlm(dlm_t *dlm)
 {
-	int i, j;
-	for (i = 0; i<MAXLINES; i++) {
-		for (j = 0; j<MAXWORDS; j++) {
-			memset(dlm.list[i][j], 0, MAXLETTERS*sizeof(char));
-		}
-	}
+	dlm->list = (char ***) calloc((sizeof(char **)),1);
+	dlm->wordnum = (int *) calloc((sizeof(int)),1);
+	dlm->linenum = 1;
+	dlm->wordnum[0] = 0;
 }
 
-/* initialize dlm.list */
-void init_dlm(struct DLM *dlm)
+/* append one blank line to dlm.list.  */
+static void append_dlm_line(dlm_t *dlm)
 {
-	(*dlm).list = (char***)malloc(MAXLINES*(sizeof(char**)));
-	int i, j;
-	for (i = 0; i<MAXLINES; i++) {
-		(*dlm).list[i] = \
-			(char**)malloc(MAXWORDS*sizeof(char*));
-		for (j = 0; j<MAXWORDS; j++) {
-			(*dlm).list[i][j] = \
-				(char*)malloc(MAXLETTERS*sizeof(char));
-		}
-	}
+	(dlm->linenum)++;
+	dlm->list = (char ***) realloc(dlm->list, \
+		(dlm->linenum)*(sizeof(char **)));
+	memset(&(dlm->list[dlm->linenum-1]), 0, (sizeof(char **)));
+	dlm->wordnum = (int *) realloc(dlm->wordnum, \
+		(dlm->linenum)*(sizeof(int)));
+	dlm->wordnum[dlm->linenum - 1] = 0;
 }
 
-/* free dlm.list */
-void free_dlm(struct DLM *dlm)
+/* append one word to dlm.list[linenum-1] */
+static void append_dlm_word(dlm_t *dlm, char *buff)
 {
-	int i, j;
-	for (i = 0; i < MAXLINES; i++) {
-		for (j = 0; j<MAXWORDS; j++) {
-			(*dlm).list[i][j] = NULL;
-			free((*dlm).list[i][j]);
-		}
-		(*dlm).list[i] = NULL;
-		free((*dlm).list[i]);
-	}
-	(*dlm).list = NULL;
-	free((*dlm).list);
+	(dlm->wordnum[dlm->linenum-1])++;
+	dlm->list[dlm->linenum-1] = (char **) realloc(dlm->list[dlm->linenum-1], \
+		(dlm->wordnum[dlm->linenum-1])*(sizeof(char *)));
+	memset(&(dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1]), \
+		0, (sizeof(char *)));
+	dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1] = \
+		(char *) calloc(strlen(buff)+1, 1);
+	memcpy(dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1], \
+		buff, strlen(buff));
 }
 
+/* free struct DLM */
+void free_dlm(dlm_t *dlm)
+{
+	int i, j;
+
+	for (i = 0; i < dlm->linenum; i++) {
+		for (j = 0; j < dlm->wordnum[i]; j++) {
+			free(dlm->list[i][j]);
+			dlm->list[i][j] = NULL;
+		}
+		free(dlm->list[i]);
+		dlm->list[i] = NULL;
+	}
+	free(dlm->list);
+	free(dlm->wordnum);
+	dlm->list = NULL;
+	dlm->wordnum = NULL;
+	dlm->linenum = 0;
+}
 
 /* helper function of readdlm. */
 static inline int readdlm_helper(char inp, int quotescue, char delim, \
 	int quotes, int comments, char comment_char)
 {
-	/* 0 for same word, 1 for next word
+	/* 0 for same word, 1 for meet delimiter
 	 * 2 for begin of quotes, 3 for end of quotes
 	 * 4 for begin of comments, 5 for next line. */
-	int code = 0;
 
 	if (!quotes) {
 		if (comments && inp == comment_char) {
-			code = 4;
-		} else if (inp != delim && inp != EOL) {
-			code = 0;
+			return 4;
+		} else if (inp != delim && inp != LF && inp != CR) {
+			return 0;
 		} else if (inp == delim) {
-			code = 1;
-		} else if (inp == EOL) {
-			code = 5;
+			return 1;
+		} else if (inp == LF || inp == CR) {
+			return 5;
 		}
 	} else if (quotes && quotescue == 0) {
 		if (comments && inp == comment_char) {
-			code = 4;
-		} else if (inp != '"' && (inp != delim && inp != EOL)) {
-			code = 0;
+			return 4;
+		} else if (inp != '"' && \
+			(inp != delim && inp != LF && inp != CR)) {
+			return 0;
 		} else if (inp != '"' && inp == delim) {
-			code = 1;
+			return 1;
 		} else if (inp == '"') {
-			code = 2;
-		} else if (inp == EOL) {
-			code = 5;
+			return 2;
+		} else if (inp == LF || inp == CR) {
+			return 5;
 		}
 	} else if (quotes && quotescue == 1) {
 		if (inp == '"') {
-			code = 3;
-		} else if (inp != EOL) {
-			code = 0;
-		} else if (inp == EOL) {
-			code = 5;
+			return 3;
+		} else if (inp != LF && inp != CR) {
+			return 0;
+		} else if (inp == LF || inp == CR) {
+			return 5;
 		}
 	}
-	return code;
+	return -1; /* Fatal */
 }
 
 /* Read delimited file into a 3D array. */
-void readdlm(FILE *fp, struct DLM *dlm, char delim, int quotes, \
+void readdlm(FILE *fp, dlm_t *dlm, char delim, int quotes, \
 	int comments, char comment_char)
 {
 	size_t len;
 	size_t read;
-	int i, j, k;
+	int i, k;
 	int code = 0;
 	int wordcue = 0;
 	int quotescue = 0;
 	char *line = NULL;
-	(*dlm).linenum = 0;
-	(*dlm).wordnum = 0;
-	memset_dlm(*dlm);
+	char buff[BUFFSIZE];
+	memset(buff, 0, BUFFSIZE);
+	init_dlm(dlm);
 
 	/* Read in one line. */
-	while ((read = getline(&line, &len, fp)) != -1) {
-		i = 0; j = 0; k = 0; wordcue = 0;
+	while ((read = getline(&line, &len, fp)) != EOF) {
+		i = 0;
+		k = 0;
+		wordcue = 0;
+		memset(buff, 0, BUFFSIZE);
+		/* append one line if current line is not empty. */
+		if (dlm->wordnum[dlm->linenum - 1]) {
+			append_dlm_line(dlm);
+		}
 		/* Make test of every letter in this line. */
-		for (i=0; i < read; i++) {
+		for (i = 0; i < read; i++) {
 			code = readdlm_helper(line[i],quotescue, \
 				delim,quotes,comments,comment_char);
 			if (code == 4 && i == 0) {
+				/* Line start with comment_char, skip all. */
 				goto SKIP;
-			} else if (code == 4) {
-				(*dlm).linenum++;
+			} else if (code == 4 && wordcue == 1) {
+				/* Find comment_char, skip to next line. */
+				append_dlm_word(dlm,buff);
+				memset(buff, 0, BUFFSIZE);
 				goto SKIP;
-			} else if (code == 5) {
-				(*dlm).linenum++;
+			} else if (code == 4 && wordcue == 0) {
+				/* Find comment_char, skip to next line. */
+				goto SKIP;
+			} else if (code == 5 && (i == 0 || wordcue == 0)) {
+				/* Blank line, skip to next line. */
+				goto SKIP;
+			} else if (code == 5 && i != 0) {
+				/* Line terminal, append last word. */
+				append_dlm_word(dlm,buff);
+				memset(buff, 0, BUFFSIZE);
 				goto SKIP;
 			} else if (code == 0) {
-				(*dlm).list[(*dlm).linenum][j][k] = line[i];
-				if (wordcue == 0) {
-					wordcue = 1;
-					(*dlm).wordnum++;
-				}
+				buff[k] = line[i];
+				wordcue = 1;
 				k++;
 			} else if (code == 1 && wordcue == 1) {
+				k = 0; /* Meet delimiter */
 				wordcue = 0;
-				k = 0;
-				j++;
+				append_dlm_word(dlm,buff); /* append last word. */
+				memset(buff, 0, BUFFSIZE);
 			} else if (code == 2) {
-				quotescue = 1;
+				quotescue = 1; /* Find quotation mark */
 			} else if (code == 3) {
-				quotescue = 0;
+				quotescue = 0; /* Find quotation mark */
 			}
 		}
-		(*dlm).wordnum++;
 		SKIP:
 			NULL;
 	}
+	free(line);
 }
