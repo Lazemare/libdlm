@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "readdlm.h"
+#include "delimitedfiles.h"
 
 /* initialization */
 #define INIT_DLM(dlm) do { \
