@@ -32,8 +32,7 @@
 		0, (sizeof(char *))); \
 	dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1] = \
 		(char *) calloc(strlen(buff)+1, 1); \
-	memcpy(dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1], \
-		buff, strlen(buff)); \
+	strcpy(dlm->list[dlm->linenum-1][dlm->wordnum[dlm->linenum-1]-1], buff); \
 } while (0)
 
 /* free struct DLM */
